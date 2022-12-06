@@ -5,7 +5,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-
 public class PoolExample {
 
     public static void main(String[] args) throws InterruptedException {
@@ -27,12 +26,11 @@ public class PoolExample {
             final int number = i;
             Thread.sleep(10);
 
-            System.out.println("creating #" + number);
-
-
-            while(executor.getActiveCount() == executor.getMaximumPoolSize())
+            while(inProgress.get() >= 3){
                 Thread.sleep(10);
+            }
 
+            System.out.println("creating #" + number);
             executor.submit(() -> {
                 int working = inProgress.incrementAndGet();
                 System.out.println("start #" + number + ", in progress: " + working);
@@ -47,5 +45,6 @@ public class PoolExample {
                 return null;
             });
         }
+        executor.shutdown();
     }
 }
